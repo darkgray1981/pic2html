@@ -223,9 +223,9 @@ func pic2html(w http.ResponseWriter, req *http.Request) {
 	// Initialize HTML parts
 	HTML := struct{ top, bottom, error []byte }{}
 	var err1, err2, err3 error
-	HTML.top, err1 = ioutil.ReadFile("result-top.data")
-	HTML.bottom, err2 = ioutil.ReadFile("result-bottom.data")
-	HTML.error, err3 = ioutil.ReadFile("result-error.data")
+	HTML.top, err1 = ioutil.ReadFile("data/result-top.data")
+	HTML.bottom, err2 = ioutil.ReadFile("data/result-bottom.data")
+	HTML.error, err3 = ioutil.ReadFile("data/result-error.data")
 	if err1 != nil || err2 != nil || err3 != nil {
 		log.Fatalln("Error:", err1, err2, err3)
 	}
