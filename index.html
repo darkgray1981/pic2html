@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>pic2html :: Convert</title>
+</head>
+
+<body>
+
+<center>
+
+<table>
+	<tr>
+		<td>
+		<h2>Convert into HTML</h2>
+		<form method="post" enctype="multipart/form-data" action="pic2html.cgi">
+		<table cellspacing="8">
+		<tr>
+			<td><label for="image">Image file: </label></td><td><input name="image" size="50" id="image" type="file"></td>
+		</tr>
+
+		<tr>
+			<td><label for="characters">Characters: </label></td><td><input name="characters" value="01" id="characters" type="text">  <input checked="checked" name="textType" value="random" type="radio">-Random <input name="textType" value="sequence" type="radio">-Sequence</td>
+		</tr>
+		<tr>
+			<td><label for="fontsize">Font size: </label></td>
+			<td>
+			<select name="fontsize" id="fontsize">
+			<option selected="selected" value="-3">Smallest</option>
+			<option value="-1">Small</option>
+			<option value="1">Normal</option>
+			<option value="3">Large</option>
+			<option value="7">Largest</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="width">Image width: </label></td><td><input name="width" value="130" size="3" maxlength="3" id="width" type="text"> (1-500) characters</td>
+		</tr>
+		<tr>
+			<td><label for="grayscale">Show it in: </label></td>
+			<td>
+			<select name="grayscale" id="grayscale">
+			<option selected="selected" value="0">Colour</option>
+			<option value="1">Grayscale</option>
+			<option value="2">Monochrome</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td><label for="bgcolor">Background: </label></td><td><input name="bgcolor" value="BLACK" id="bgcolor" type="text"></td>
+		</tr>
+                <tr>
+                        <td><label for="contrast">Extra contrast: </label></td>
+			<td>
+			<select name="contrast" id="contrast">
+				<option selected="selected" value="0">No</option>
+				<option value="1">Yes</option>
+			</select>
+			</td>
+                </tr>
+		<tr>
+			<td><label for="browser">Web browser: </label></td>
+			<td>
+			<select name="browser" id="browser">
+			<option value="ie">Internet Explorer</option>
+			<option selected="selected" value="firefox">Mozilla Firefox</option>
+			<option value="firefox">Other</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td><br><input value="Convert!" type="submit"></td>
+		</tr>
+		</table>
+		</form>
+		<p><br>For help on using the converter, see the <a href="http://www.text-image.com/help.html">help page</a>.
+		</td>
+	</tr>
+</table>
+
+</center>
+</body>
+</html>
