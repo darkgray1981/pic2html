@@ -253,8 +253,8 @@ func pic2html(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	w.Write(HTML.top)
 	w.Header().Set("Content-Type", http.DetectContentType(result))
+	w.Write(HTML.top)
 	w.Write(result)
 	w.Write(HTML.bottom)
 
