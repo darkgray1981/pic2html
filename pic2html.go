@@ -146,29 +146,28 @@ func convertImage(img image.Image, settings map[string]interface{}) (result []by
 	// Prepare variables
 	htmlStart := "<font color=#"
 	htmlEnd := "</font>"
-	current, previous := "", ""
+	var current, previous uint = 0, 0
 	next := nextChar(p.texttype, p.characters)
 	b := m.Bounds()
 
 	// Loop over all pixels and add HTML-font converted data to the output buffer
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		j := m.PixOffset(0, y)
-		current = hex(uint(m.Pix[j+0])) + hex(uint(m.Pix[j+1])) + hex(uint(m.Pix[j+2]))
-		buffer.WriteString(htmlStart + current + ">" + next())
+		current = uint(m.Pix[j+0])<<16 | uint(m.Pix[j+1])<<8 | uint(m.Pix[j+2])
+		buffer.WriteString(htmlStart + hex(current) + ">" + next())
 		previous = current
 
 		for x := b.Min.X + 1; x < b.Max.X; x++ {
 			i := m.PixOffset(x, y)
-			current = hex(uint(m.Pix[i+0])<<16 | uint(m.Pix[i+1])<<8 | uint(m.Pix[i+2]))
+			current = uint(m.Pix[i+0])<<16 | uint(m.Pix[i+1])<<8 | uint(m.Pix[i+2])
 			if previous != current {
-				buffer.WriteString(htmlEnd + htmlStart + current + ">" + next())
+				buffer.WriteString(htmlEnd + htmlStart + hex(current) + ">" + next())
 			} else {
 				buffer.WriteString(next())
 			}
 			previous = current
 		}
 
-		previous = ""
 		buffer.WriteString(htmlEnd + "<br>")
 	}
 
@@ -210,9 +209,9 @@ func parseImage(req *http.Request) (m image.Image, settings map[string]interface
 func Error(err string) []byte {
 	var output string
 
-	output += "<table align=center><tr bgcolor=black><td><font color=lightblue size=4>Error: "
-	output += err
-	output += "</font></td></tr></table>\n"
+	output = "<table align=center><tr bgcolor=black><td><font color=lightblue size=4>Error: " +
+		err +
+		"</font></td></tr></table>\n"
 
 	return []byte(output)
 }
