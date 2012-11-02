@@ -64,18 +64,18 @@ func monochrome(img image.Image) {
 
 // Resize an image to be w wide and h high
 func resize(original image.Image, w, h int) (image.Image, error) {
-	img, ok := original.(*image.RGBA)
+	src, ok := original.(*image.RGBA)
 	if ok == false {
 		b := original.Bounds()
-		img = image.NewRGBA(b)
-		draw.Draw(img, b, original, b.Min, draw.Src)
+		src = image.NewRGBA(b)
+		draw.Draw(src, b, original, b.Min, draw.Src)
 	}
 
-	width := img.Bounds().Dx()
-	height := img.Bounds().Dy()
+	width := src.Bounds().Dx()
+	height := src.Bounds().Dy()
 
 	if width < 1 || height < 1 {
-		return image.Image(img), fmt.Errorf("Image dimensions invalid -- %v, %v", width, height)
+		return image.Image(src), fmt.Errorf("Image dimensions invalid -- %v, %v", width, height)
 	}
 
 	if h == 0 {
@@ -83,37 +83,39 @@ func resize(original image.Image, w, h int) (image.Image, error) {
 		h = int(float32(w) / (float32(width) / float32(height)))
 	}
 	if w < 1 || h < 1 {
-		return image.Image(img), fmt.Errorf("Resize values invalid -- %v, %v", w, h)
+		return image.Image(src), fmt.Errorf("Resize values invalid -- %v, %v", w, h)
 	}
 
-	m := image.NewRGBA(image.Rect(0, 0, w, h))
+	dst := image.NewRGBA(image.Rect(0, 0, w, h))
 
 	xRatio := float32(width) / float32(w)
 	yRatio := float32(height) / float32(h)
 
 	if width > w {
 		// Blend pixels from larger source in smaller destination image
-		b := img.Bounds()
-		i := img.PixOffset(0, 0)
-		checklist := make([]bool, len(img.Pix)>>2)
+		b := src.Bounds()
+		i := src.PixOffset(0, 0)
+		checklist := make([]bool, len(src.Pix)>>2)
 
 		for y := b.Min.Y; y < b.Max.Y; y++ {
 			oy := int(float32(y) / yRatio)
 			for x := b.Min.X; x < b.Max.X; x++ {
 				ox := int(float32(x) / xRatio)
-				o := m.PixOffset(ox, oy)
+				o := dst.PixOffset(ox, oy)
 
 				if !checklist[o>>2] {
+					// Untouched pixel, do initial paint
 					checklist[o>>2] = true
-					m.Pix[o+0] = img.Pix[i+0]
-					m.Pix[o+1] = img.Pix[i+1]
-					m.Pix[o+2] = img.Pix[i+2]
-					m.Pix[o+3] = img.Pix[i+3]
+					dst.Pix[o+0] = src.Pix[i+0]
+					dst.Pix[o+1] = src.Pix[i+1]
+					dst.Pix[o+2] = src.Pix[i+2]
+					dst.Pix[o+3] = src.Pix[i+3]
 				} else {
-					m.Pix[o+0] = uint8((uint64(m.Pix[o+0]) + uint64(img.Pix[i+0])) >> 1)
-					m.Pix[o+1] = uint8((uint64(m.Pix[o+1]) + uint64(img.Pix[i+1])) >> 1)
-					m.Pix[o+2] = uint8((uint64(m.Pix[o+2]) + uint64(img.Pix[i+2])) >> 1)
-					m.Pix[o+3] = uint8((uint64(m.Pix[o+3]) + uint64(img.Pix[i+3])) >> 1)
+					// Pixel already seen, paint with average blend
+					dst.Pix[o+0] = uint8((uint64(dst.Pix[o+0]) + uint64(src.Pix[i+0])) >> 1)
+					dst.Pix[o+1] = uint8((uint64(dst.Pix[o+1]) + uint64(src.Pix[i+1])) >> 1)
+					dst.Pix[o+2] = uint8((uint64(dst.Pix[o+2]) + uint64(src.Pix[i+2])) >> 1)
+					dst.Pix[o+3] = uint8((uint64(dst.Pix[o+3]) + uint64(src.Pix[i+3])) >> 1)
 				}
 
 				i += 4
@@ -121,24 +123,24 @@ func resize(original image.Image, w, h int) (image.Image, error) {
 		}
 	} else {
 		// Destination image larger than source, no blend required
-		b := m.Bounds()
-		i := m.PixOffset(0, 0)
+		b := dst.Bounds()
+		i := dst.PixOffset(0, 0)
 
 		for y := b.Min.Y; y < b.Max.Y; y++ {
 			oy := int(float32(y) * yRatio)
 			for x := b.Min.X; x < b.Max.X; x++ {
 				ox := int(float32(x) * xRatio)
-				o := img.PixOffset(ox, oy)
+				o := src.PixOffset(ox, oy)
 
-				m.Pix[i+0] = img.Pix[o+0]
-				m.Pix[i+1] = img.Pix[o+1]
-				m.Pix[i+2] = img.Pix[o+2]
-				m.Pix[i+3] = img.Pix[o+3]
+				dst.Pix[i+0] = src.Pix[o+0]
+				dst.Pix[i+1] = src.Pix[o+1]
+				dst.Pix[i+2] = src.Pix[o+2]
+				dst.Pix[i+3] = src.Pix[o+3]
 
 				i += 4
 			}
 		}
 	}
 
-	return m, nil
+	return dst, nil
 }
