@@ -8,26 +8,20 @@ import (
 
 // Returns hexadecimal format string of number
 func hex(num uint) string {
-	var temp [16]byte
-	counter := 0
-	for num > 0 {
+	temp := []byte{'0', '0', '0', '0', '0', '0'}
+
+	for counter := 0; num > 0; counter++ {
 		n := uint8(num & 0xF)
 		if n < 10 {
-			temp[15-counter] = '0' + n
+			temp[5-counter] = '0' + n
 		} else {
-			temp[15-counter] = 55 + n
+			temp[5-counter] = ('A' - 10) + n
 		}
 
 		num >>= 4
-		counter++
 	}
-	if counter == 0 {
-		return ""
-	}
-	if counter&1 != 0 {
-		return "0" + string(temp[16-counter:])
-	}
-	return string(temp[16-counter:])
+
+	return string(temp)
 }
 
 // Returns grayscale value of RGB
